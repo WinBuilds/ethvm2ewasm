@@ -2,9 +2,20 @@
 .gch
 
 /build
+build-*/
+build_*/
+
 /.idea
 /deps
 
 tmp/*
 !tmp/.gitkeep
 node_modules/
+
+*.lnk
+*.aps
+*.VC.db
+*.VC.opendb
+.vs/
+ipvh/
+

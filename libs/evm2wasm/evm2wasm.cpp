@@ -5,7 +5,7 @@
 #include <vector>
 #include <sstream>
 
-#include <fmt/format.h>
+#include <fmt4/fmt_format.h>
 
 #include <wasm-binary.h>
 #include <wasm-s-parser.h>
@@ -241,7 +241,7 @@ string evm2wast(const vector<uint8_t>& evmCode, bool stackTrace, bool useAsyncAP
             break;
         case opcodeEnum::JUMPDEST:
             endSegment();
-            jumpSegments.push_back({.number = pc, .type = "jump_dest"});
+            jumpSegments.push_back({pc, "jump_dest"});
             gasCount = 1;
             break;
         case opcodeEnum::GAS:
@@ -263,7 +263,10 @@ string evm2wast(const vector<uint8_t>& evmCode, bool stackTrace, bool useAsyncAP
         case opcodeEnum::PUSH:
         {
             pc++;
-            size_t sliceSize = std::min(op.number, 32ul);
+            size_t sliceSize = op.number;
+            if (sliceSize > 32ul)
+               sliceSize = 32ul;
+
             std::vector<uint8_t> bytes = std::vector<uint8_t>(evmCode.begin() + pc, evmCode.begin() + pc + sliceSize);
 
             pc += op.number;
@@ -376,7 +379,7 @@ string evm2wast(const vector<uint8_t>& evmCode, bool stackTrace, bool useAsyncAP
         {
             segment << "(set_global $cb_dest (i32.const {jumpSegmentsLength})) \
                             (br $done))"_format("jumpSegmentsLength"_a = jumpSegments.size() + 1);
-            jumpSegments.push_back({.number = 0, .type = "cb_dest"});
+            jumpSegments.push_back({0, "cb_dest"});
         }
     }
 
